@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>大大按鈕顯示照片</title>
+  <style>
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      background: linear-gradient(135deg, #ffb6c1 0%, #fff 100%);
+      overflow: hidden;
+      position: relative;
+      animation: bgFlash 1.5s infinite alternate;
+    }
+    @keyframes bgFlash {
+      0% { filter: brightness(1); }
+      100% { filter: brightness(1.15) saturate(1.3); }
+    }
+    .ad {
+      /* 廣告浮動標語隱藏，改用彈窗 */
+      display: none;
+    }
+    .popup-ad {
+      position: fixed;
+      top: 10%;
+      left: 50%;
+      transform: translate(-50%, 0);
+      min-width: 320px;
+      max-width: 90vw;
+      background: linear-gradient(135deg, #fffbe7 60%, #ffe0e0 100%);
+      border: 4px solid #ff9800;
+      border-radius: 1.5rem;
+      box-shadow: 0 8px 32px #ff980088, 0 2px 8px #d500f9aa;
+      padding: 2rem 2.5rem 1.5rem 2.5rem;
+      z-index: 9999;
+      font-size: 1.3rem;
+      color: #d50000;
+      text-align: center;
+      font-weight: bold;
+      animation: pop 0.3s;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
+      font-family: Impact, 'Arial Black', 'Comic Sans MS', Arial, sans-serif;
+      letter-spacing: 1px;
+    }
+    .popup-ad .icon {
+      font-size: 2.5rem;
+      margin-bottom: 0.5rem;
+      animation: iconSpin 1.2s infinite linear;
+    }
+    @keyframes iconSpin {
+      0% { transform: rotate(-10deg); }
+      50% { transform: rotate(10deg) scale(1.15); }
+      100% { transform: rotate(-10deg); }
+    }
+    .popup-ad .headline {
+      font-size: 1.6rem;
+      color: #ff9800;
+      font-weight: bold;
+      margin-bottom: 0.2rem;
+      text-shadow: 1px 1px 0 #fff, 0 2px 8px #ff980055;
+    }
+    .popup-ad .desc {
+      font-size: 1.1rem;
+      color: #d50000;
+      margin-bottom: 0.5rem;
+    }
+    .popup-ad .ad-btn {
+      background: linear-gradient(90deg, #ff9800 60%, #ffd600 100%);
+      color: #fff;
+      font-size: 1.2rem;
+      font-weight: bold;
+      border: none;
+      border-radius: 2rem;
+      padding: 0.7rem 2.2rem;
+      margin-top: 0.5rem;
+      box-shadow: 0 2px 8px #ff980055;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+      outline: none;
+    }
+    .popup-ad .ad-btn:hover {
+      background: linear-gradient(90deg, #ffd600 60%, #ff9800 100%);
+      color: #d50000;
+      transform: scale(1.08);
+    }
+    .popup-ad .close-btn {
+      position: absolute;
+      top: 0.7rem;
+      right: 1.2rem;
+      font-size: 1.3rem;
+      color: #ff9800;
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-weight: bold;
+      z-index: 2;
+    }
+    #showPhotoBtn {
+      font-size: 2.5rem;
+      padding: 2rem 4rem;
+      background: #ff9800;
+      color: white;
+      border: none;
+      border-radius: 1rem;
+      cursor: pointer;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+      transition: background 0.2s;
+      z-index: 20;
+    }
+    #showPhotoBtn:hover {
+      background: #f57c00;
+    }
+    #friendPhoto {
+      display: none;
+      margin-top: 2rem;
+      width: 98vw;
+      height: auto;
+      max-width: 1800px;
+      max-height: 90vh;
+      border-radius: 1rem;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.15);
+      object-fit: contain;
+      z-index: 15;
+    }
+    .fake-modal {
+      position: fixed;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      background: #fff0f6;
+      border: 3px solid #ff4081;
+      border-radius: 1.5rem;
+      box-shadow: 0 8px 32px #ff408188;
+      padding: 2rem 2.5rem;
+      z-index: 9999;
+      font-size: 1.5rem;
+      color: #d500f9;
+      text-align: center;
+      font-weight: bold;
+      animation: pop 0.3s;
+    }
+    @keyframes pop {
+      0% { transform: scale(0.7) translate(-50%, -50%); opacity: 0; }
+      100% { transform: scale(1) translate(-50%, -50%); opacity: 1; }
+    }
+  </style>
+  <style>
+    @media (max-width: 600px) {
+      #showPhotoBtn {
+        font-size: 1.5rem;
+        padding: 1.2rem 1.5rem;
+        border-radius: 0.8rem;
+      }
+      #friendPhoto {
+        width: 98vw;
+        max-width: 100vw;
+        max-height: 60vh;
+        border-radius: 0.5rem;
+      }
+      .popup-ad {
+        min-width: 90vw;
+        max-width: 98vw;
+        padding: 1.2rem 0.5rem 1rem 0.5rem;
+        font-size: 1rem;
+        border-radius: 0.8rem;
+      }
+      .popup-ad .icon {
+        font-size: 2rem;
+      }
+      .popup-ad .headline {
+        font-size: 1.1rem;
+      }
+      .popup-ad .desc {
+        font-size: 0.95rem;
+      }
+      .popup-ad .ad-btn {
+        font-size: 1rem;
+        padding: 0.5rem 1.2rem;
+        border-radius: 1.2rem;
+      }
+      .popup-ad .close-btn {
+        font-size: 1.1rem;
+        top: 0.4rem;
+        right: 0.7rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <button id="showPhotoBtn">點我看我朋友！</button>
+  <img id="friendPhoto" src="friend.jpg" alt="朋友的照片">
+  <script>
+    const btn = document.getElementById('showPhotoBtn');
+    const photo = document.getElementById('friendPhoto');
+    btn.addEventListener('click', () => {
+      photo.style.display = 'block';
+      btn.style.display = 'none';
+      showFakePopups();
+      createPopupAds(3 + Math.floor(Math.random()*3));
+    });
+
+    // 90年代惡搞風格
+    const popupAds = [
+      {
+        icon: '💿',
+        headline: 'FREE DVD\'s',
+        desc: 'Click now to claim your prize!',
+        btn: 'CLICK NOW!',
+        color: '#2196f3',
+        bg: '#e3f2fd',
+      },
+      {
+        icon: '🧠',
+        headline: 'THE SKULL IMPLANT',
+        desc: 'Comes in this decorative tin! Click here for info!',
+        btn: 'click here for info!',
+        color: '#fff',
+        bg: '#222',
+      },
+      {
+        icon: '🛑',
+        headline: 'WOAH THERE LITTLE FELLA!',
+        desc: 'Are you over 18?',
+        btn: 'YES',
+        color: '#fff',
+        bg: '#c62828',
+      },
+      {
+        icon: '🎉',
+        headline: 'congrats!',
+        desc: 'You found another popup!',
+        btn: 'click here to go!',
+        color: '#fff',
+        bg: '#1976d2',
+      },
+      {
+        icon: '❓',
+        headline: 'DOES IT EVEN MATTER?',
+        desc: '',
+        btn: 'CLICK HERE!',
+        color: '#222',
+        bg: '#ffeb3b',
+      },
+      {
+        icon: '🌐',
+        headline: 'Search the Mill',
+        desc: 'The best search engine',
+        btn: 'Search now',
+        color: '#fff',
+        bg: '#8bc34a',
+      },
+    ];
+
+    // 產生中國風格/90年代惡搞優惠彈窗
+    function createPopupAds(n) {
+      for (let i = 0; i < n; i++) {
+        const ad = popupAds[Math.floor(Math.random()*popupAds.length)];
+        const popup = document.createElement('div');
+        popup.className = 'popup-ad';
+        popup.style.top = (10 + Math.random()*60) + '%';
+        popup.style.left = (10 + Math.random()*70) + '%';
+        if(ad.bg) popup.style.background = ad.bg;
+        if(ad.color) popup.style.color = ad.color;
+        popup.innerHTML = `
+          <button class="close-btn">✖</button>
+          <div class="icon">${ad.icon}</div>
+          <div class="headline">${ad.headline}</div>
+          <div class="desc">${ad.desc}</div>
+          <button class="ad-btn">${ad.btn}</button>
+        `;
+        popup.querySelector('.close-btn').onclick = () => {
+          popup.remove();
+          // 關掉時再跳出1~2個新彈窗
+          createPopupAds(1 + Math.floor(Math.random()*2));
+        };
+        popup.querySelector('.ad-btn').onclick = () => {
+          alert('請先登入會員才能領取優惠！');
+        };
+        document.body.appendChild(popup);
+      }
+    }
+
+    // 假彈窗
+    function showFakeModal(text) {
+      const modal = document.createElement('div');
+      modal.className = 'fake-modal';
+      modal.innerText = text;
+      setTimeout(() => {
+        modal.remove();
+      }, 2200);
+      document.body.appendChild(modal);
+    }
+
+    // 點按鈕後彈出多個假彈窗
+    function showFakePopups() {
+      setTimeout(() => showFakeModal('你是第10000位幸運訪客！'), 200);
+      setTimeout(() => showFakeModal('附近有3位美女正在等你...'), 900);
+      setTimeout(() => showFakeModal('恭喜獲得VIP體驗！'), 1700);
+    }
+  </script>
+</body>
+</html> 
